@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Mb Link",
+  "name": "Link for MB",
   "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "description": "Link for MB to 3rd party productivity apps.",
   "icons": {
     "16": "icons/icon_16.png",
     "32": "icons/icon_32.png",
@@ -13,7 +13,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Mb Link",
+    "default_title": "Link for MB",
     "default_popup": "popup.html"
   },
   "permissions": [
@@ -29,5 +29,16 @@
         "contentScript.js"
       ]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "/v1/*"],
+      "matches": [
+        "https://api.notion.com/*"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ]
 }

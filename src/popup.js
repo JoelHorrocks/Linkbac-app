@@ -3,6 +3,26 @@
 import './popup.css';
 
 (function () {
+  function setupButtons() {
+    document.getElementById('notion').addEventListener('click', () => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+      chrome.tabs.sendMessage(
+        tab.id,
+        {
+          type: 'NOTION',
+          payload: {},
+        },
+        (response) => {
+          console.log('Sent signal to contentScript to add to notion');
+        }
+      );
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupButtons);
+
   // We will make use of Storage API to get and store `count` value
   // More information on Storage API can we found at
   // https://developer.chrome.com/extensions/storage
@@ -94,8 +114,6 @@ import './popup.css';
       }
     });
   }
-
-  document.addEventListener('DOMContentLoaded', restoreCounter);
 
   // Communicate with background file by sending a message
   chrome.runtime.sendMessage(

@@ -67,7 +67,8 @@ code {
   padding: 10px 20px;
   margin-right: 4px;
   margin-left: 4px;
-  background-color: bisque;
+  background-color: #8899a6;
+  color: white;
   font-size: 16px;
   cursor: pointer;
   border-radius: 4px;
@@ -76,12 +77,16 @@ code {
   user-select: none;
 }
 
+.button-primary {
+  background-color: #8ba680;
+}
+
 .button:focus {
   outline: none;
 }
 
 .button:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .divider {

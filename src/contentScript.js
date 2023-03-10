@@ -36,6 +36,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log(`Current count is ${request.payload.count}`);
   }
 
+  let title = document.getElementsByClassName("content-block-header")[0].innerText;
+  let label = document.querySelectorAll(".label-and-due .label")[0].innerText;
+
+  let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+  let month = months.indexOf(document.getElementsByClassName("month")[0].innerText) + 1;
+  let day = document.getElementsByClassName("day")[0].innerText;
+  let date = new Date().getFullYear() + "-" + ("0" + month).slice(-2) +  "-" + ("0" + day).slice(-2)
+
+
+  if(request.type == 'NOTION') {
+    // Communicate with background file by sending a message
+chrome.runtime.sendMessage(
+  {
+    type: 'NOTION',
+    payload: {
+      message: {"title": title, "type": label, "date": date},
+    },
+  }
+);
+  }
+
   // Send an empty response
   // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
   sendResponse({});

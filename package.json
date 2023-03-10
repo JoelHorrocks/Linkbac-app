@@ -1,7 +1,7 @@
 {
-  "name": "mb-link",
+  "name": "link-for-mb",
   "version": "0.1.0",
-  "description": "My Chrome Extension",
+  "description": "Link for MB to 3rd party productivity apps.",
   "private": true,
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",
@@ -17,5 +17,8 @@
     "webpack": "^5.76.0",
     "webpack-cli": "^4.10.0",
     "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "@notionhq/client": "^1.0.1"
   }
 }
