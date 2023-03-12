@@ -5,7 +5,7 @@ export function textToEmoji(text, subject) {
         case ["writing", "paragraph"].some(substring=>text.includes(substring)):
             return getRandom(["✏️", "✍️", "✒️", "🖊️"]);
         case ["analysis"].some(substring=>text.includes(substring)):
-            return "✏️";
+            return "🔍";
         case ["timed"].some(substring=>text.includes(substring)):
             return "⏳";
         case ["space"].some(substring=>text.includes(substring)):

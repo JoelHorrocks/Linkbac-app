@@ -19,6 +19,13 @@ import './popup.css';
       );
       });
     });
+    document.getElementById('settings').addEventListener('click', function() {
+      if (chrome.runtime.openOptionsPage) {
+        chrome.runtime.openOptionsPage();
+      } else {
+        window.open(chrome.runtime.getURL('options.html'));
+      }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', setupButtons);
@@ -98,20 +105,6 @@ import './popup.css';
           );
         });
       });
-    });
-  }
-
-  function restoreCounter() {
-    // Restore count value
-    counterStorage.get((count) => {
-      if (typeof count === 'undefined') {
-        // Set counter value as 0
-        counterStorage.set(0, () => {
-          setupCounter(0);
-        });
-      } else {
-        setupCounter(count);
-      }
     });
   }
 
