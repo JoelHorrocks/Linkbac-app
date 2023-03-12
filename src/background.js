@@ -47,7 +47,15 @@ async function addToNotion(message) {
           select: {
             name: message["type"]
           }
+        }, 
+        "Class": {
+          select: {
+            name: message["class"]
+          }
         },
+        "Criteria": {
+          multi_select: message["criteria"]
+        }, 
         "Due": {
           date: {
             start: message["date"]

@@ -42,19 +42,37 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
   let month = months.indexOf(document.getElementsByClassName("month")[0].innerText) + 1;
   let day = document.getElementsByClassName("day")[0].innerText;
-  let date = new Date().getFullYear() + "-" + ("0" + month).slice(-2) +  "-" + ("0" + day).slice(-2)
+  let date = new Date().getFullYear() + "-" + ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2);
 
-
-  if(request.type == 'NOTION') {
-    // Communicate with background file by sending a message
-chrome.runtime.sendMessage(
-  {
-    type: 'NOTION',
-    payload: {
-      message: {"title": title, "type": label, "date": date},
-    },
+  let criteria = []
+  for(const i of document.querySelectorAll("a:has(+*[id^='core_criteria'])")) {
+    criteria.push({"name": i.innerText.split(':')[0]})
   }
-);
+
+  if(criteria.length == 0) {
+    criteria.push({"name": "N/A"})
+  }
+
+  let subject = document.querySelectorAll("li a.active span")[0].innerText;
+
+  if (request.type == 'NOTION') {
+    // Communicate with background file by sending a message
+
+    chrome.storage.sync.get({
+      savedClassMap: {}
+    }, function (items) {
+      if (Object.hasOwn(items.savedClassMap, subject)) {
+        subject = items.savedClassMap[subject]
+      }
+      chrome.runtime.sendMessage(
+        {
+          type: 'NOTION',
+          payload: {
+            message: { "title": title, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date },
+          },
+        }
+      );
+    })
   }
 
   // Send an empty response
