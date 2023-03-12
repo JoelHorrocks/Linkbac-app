@@ -1,5 +1,7 @@
 'use strict';
 
+import { textToEmoji } from './emoji-map.js';
+
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
 // Document Object Model (DOM).
@@ -55,6 +57,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   let subject = document.querySelectorAll("li a.active span")[0].innerText;
 
+  let emoji = textToEmoji(title, subject);
+  console.log(emoji);
+
   if (request.type == 'NOTION') {
     // Communicate with background file by sending a message
 
@@ -68,7 +73,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         {
           type: 'NOTION',
           payload: {
-            message: { "title": title, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date },
+            message: {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date },
           },
         }
       );

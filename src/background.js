@@ -62,6 +62,10 @@ async function addToNotion(message) {
           }
         }
       },
+      icon: {
+        type: "emoji",
+        emoji: message["emoji"]
+      }
     })
     console.log(response)
     console.log("Success! Entry added.")
