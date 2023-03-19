@@ -1,14 +1,26 @@
+'use strict';
+
+import { makeConsoleLogger } from '@notionhq/client/build/src/logging';
+import './options.css';
+
 var classMap = {}
 
 // Saves options to chrome.storage
 function save_options() {
     var service = document.getElementById('service').value;
+
+    // TODO: auto detect + allow changing
     var useNotionTemplate = document.getElementById('template').checked;
+
+    var dbId = document.getElementById('database_id').value;
+
+    // If off, allow setting custom database ID. If on, check if database is given. If not, ask for ID.
 
     chrome.storage.sync.set({
         chosenService: service,
         useNotionTemplate: useNotionTemplate,
-        savedClassMap: classMap
+        savedClassMap: classMap,
+        databaseId: dbId
     }, function () {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
@@ -26,17 +38,48 @@ function restore_options() {
     chrome.storage.sync.get({
         chosenService: 'Notion',
         useNotionTemplate: true,
-        savedClassMap: {}
+        savedClassMap: {},
+        authToken: "",
+        botId: "",
+        databaseTemplateId: "",
+        databaseId: ""
     }, function (items) {
         document.getElementById('service').value = items.chosenService;
         document.getElementById('template').checked = items.useNotionTemplate;
         document.getElementById('custom').checked = !items.useNotionTemplate;
 
+        if(items.databaseTemplateId == "" || items.databaseTemplateId == null) {
+            document.getElementById('template_notice').style.display = "none";
+            document.getElementById('database_id').value = items.databaseId;
+        }
+        else {
+            document.getElementById('database_id').style.display = "none";
+        }
+
+        if(items.authToken != "" && items.botId != ""){
+            document.getElementById("sign-in").innerHTML = "Sign out";
+            document.getElementById("sign-in").addEventListener(
+                'click', () => {
+                    chrome.storage.sync.set({
+                        authToken: "",
+                        botId: "",
+                        databaseId: ""
+                    }, function () {
+                        document.getElementById("sign-in").innerHTML = "Sign in";
+                        document.getElementById("sign-in").addEventListener(
+                            'click', () => { document.location.href = "https://storeimg.com/linkformb/oauth.php"; })
+                     }
+                )})
+        } else {
+            document.getElementById("sign-in").addEventListener(
+                'click', () => { document.location.href = "https://storeimg.com/linkformb/oauth.php"; })
+        }
+
         classMap = items.savedClassMap;
 
-        for(i in classMap) {
-            className = i;
-            classValue = classMap[i];
+        for(const i in classMap) {
+            let className = i;
+            let classValue = classMap[i];
 
             let span = document.createElement("span")
             let classInput = document.createElement("input")
@@ -133,4 +176,6 @@ save_options)
 document.getElementById('template').addEventListener('change', 
 save_options)
 document.getElementById('custom').addEventListener('change', 
+save_options)
+document.getElementById('database_id').addEventListener('change',
 save_options)

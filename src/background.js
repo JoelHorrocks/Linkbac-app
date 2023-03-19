@@ -8,22 +8,37 @@ import { Client } from "@notionhq/client";
 // See https://developer.chrome.com/extensions/background_pages
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if(request.type === 'NOTION') {
-    addToNotion(request.payload.message);
+  if (request.type === 'NOTION') {
+    chrome.storage.sync.get({
+      authToken: "",
+      botId: "",
+      databaseId: "",
+      databaseTemplateId: "",
+      useNotionTemplate: true
+    }, function (items) {
+      addToNotion(request.payload.message, items);
+    })
   }
 });
 
-async function addToNotion(message) {
-  const notion = new Client({ auth: "NOTION_SECRET" })
-  
-  const databaseId = "DATABASE_ID"
+async function addToNotion(message, items) {
+  const notion = new Client({ auth: items.authToken })
+
+  let databaseId = "";
+  // items.useNotionTemplate stores whether custom layout or built-in
+  if (items.databaseTemplateId != "" && items.databaseTemplateId != null) {
+    databaseId = items.databaseTemplateId;
+  }
+  else {
+    databaseId = items.databaseId;
+  }
 
   try {
     const response = await notion.pages.create({
       parent: { database_id: databaseId },
       properties: {
         title: {
-          title:[
+          title: [
             {
               "text": {
                 "content": message["title"]
@@ -35,7 +50,7 @@ async function addToNotion(message) {
           select: {
             name: message["type"]
           }
-        }, 
+        },
         "Class": {
           select: {
             name: message["class"]
@@ -43,7 +58,7 @@ async function addToNotion(message) {
         },
         "Criteria": {
           multi_select: message["criteria"]
-        }, 
+        },
         "Due": {
           date: {
             start: message["date"]

@@ -3,38 +3,50 @@
 
 <head>
     <title>Link for MB Options</title>
+    <link rel="stylesheet" href="options.css" />
 </head>
 
 <body>
+    <h1>Link for MB Settings</h1>
 
-    Select a service to link to:
+    <br>
+
+    <span>Select a service to link to:
     <select id="service">
         <option value="notion">Notion</option>
-    </select>
+    </select></span>
 
     <br>
 
-    <button>Sign in</button>
+    <button class="button" id="sign-in">Sign in</button>
 
-    <br>
+    <br><br>
+
+    <span>Class name mapping</span>
 
     <div id="mappings">
     </div>
     <input id="class"><input id="class-value"><button id="map">Map class name</button>
 
-    <br>
+    <br><br>
+
+    <p id="template_notice">Using Link for MB template</p>
 
     <input type="radio" id="template" name="link_type" value="Template" checked>
-    <label for="template">Use Link for MB template</label><br>
-    <input type="radio" id="custom" name="link_type" value="Custom">
-    <label for="custom">Custom Notion database</label>
-    
-    <br>
-
+    <label for="template">Use Link for MB layout</label><br>
     <a href="https://lime-random-e9a.notion.site/b592ad5a0cfa4d358fbd9175d28bd27d?v=c80caba02d3a4cb5aa645fb9b3a68ec8">Get the template</a>
+    <br>
+    <input type="radio" id="custom" name="link_type" value="Custom">
+    <label for="custom">Custom Notion database layout</label>
+    
+    <br><br>
+
+    <input id="database_id">
 
     <br>
-    
+
+   <br>
+
     <div id="status"></div>
 
     <script src="options.js"></script>

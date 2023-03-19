@@ -13,11 +13,6 @@ import { textToEmoji } from './emoji-map.js';
 // For more information on Content Scripts,
 // See https://developer.chrome.com/extensions/content_scripts
 
-// Log `title` of current active web page
-const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
-console.log(
-  `Page title is: '${pageTitle}' - evaluated by Chrome extension's 'contentScript.js' file`
-);
 
 // Listen for message
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -72,3 +67,33 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   sendResponse({});
   return true;
 });
+
+// OAuth saving
+function getUrlVars(ar){
+  let vars = {};
+  let parts = ar.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      vars[key] = value;
+  });
+  let keyVal = vars;
+  return vars;
+  }
+
+if(location.protocol + '//' + location.host + location.pathname == "https://storeimg.com/linkformb/oauth-done.php") {
+  fetch("https://storeimg.com/linkformb/oauth-code.php?code=" + getUrlVars(location.href)["code"]).then((response) => response.json())
+  .then((data) => {
+    console.log(data)
+    chrome.storage.sync.set({
+      authToken: data["access_token"],
+      botId: data["bot_id"],
+      databaseTemplateId: data["duplicated_template_id"]
+  }, function () {
+    let success_text = "<h1>Success!</h1>";
+    if(data["duplicated_template_id"] === null){
+      success_text += "<br><p>As you didn't use the template, please set a database ID in options. (?)"
+
+      document.body.innerHTML = success_text
+    }
+    document.body.innerHTML = success_text
+  }); 
+  });
+}
