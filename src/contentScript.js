@@ -37,7 +37,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     criteria.push({"name": "N/A"})
   }
 
-  let subject = document.querySelectorAll("li a.active span")[0].innerText;
+  // Handle subject string starting with "IB MYP" / "IB DP" in future, or use class IDs
+  let subject = document.querySelectorAll(".with-indicators li a.active span")[0].innerText;
 
   let emoji = textToEmoji(title, subject);
   console.log(emoji);
