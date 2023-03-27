@@ -13,7 +13,6 @@ import { textToEmoji } from './emoji-map.js';
 // For more information on Content Scripts,
 // See https://developer.chrome.com/extensions/content_scripts
 
-
 // Listen for message
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'COUNT') {
@@ -40,6 +39,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   // Handle subject string starting with "IB MYP" / "IB DP" in future, or use class IDs
   let subject = document.querySelectorAll(".with-indicators li a.active span")[0].innerText;
 
+  let id = location.href.substring(location.href.lastIndexOf('/') + 1);
+
   let emoji = textToEmoji(title, subject);
   console.log(emoji);
 
@@ -56,7 +57,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         {
           type: 'NOTION',
           payload: {
-            message: {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date },
+            message: {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date, "id": id },
           },
         }
       );
@@ -88,13 +89,11 @@ if(location.protocol + '//' + location.host + location.pathname == "https://stor
       botId: data["bot_id"],
       databaseTemplateId: data["duplicated_template_id"]
   }, function () {
-    let success_text = "<h1>Success!</h1>";
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("success").style.display = "block";
     if(data["duplicated_template_id"] === null){
-      success_text += "<br><p>As you didn't use the template, please set a database ID in options. (?)"
-
-      document.body.innerHTML = success_text
+      document.getElementById("success-text").innerHTML += "<br><p>As you didn't use the template, please set a database ID in options. (?)"
     }
-    document.body.innerHTML = success_text
   }); 
   });
 }

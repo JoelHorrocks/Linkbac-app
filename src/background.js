@@ -19,6 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       addToNotion(request.payload.message, items);
     })
   }
+  return true;
 });
 
 async function addToNotion(message, items) {
@@ -63,6 +64,9 @@ async function addToNotion(message, items) {
           date: {
             start: message["date"]
           }
+        },
+        "ID": {
+          number: parseInt(message["id"])
         }
       },
       icon: {
