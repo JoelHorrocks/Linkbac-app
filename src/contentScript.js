@@ -19,16 +19,58 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log(`Current count is ${request.payload.count}`);
   }
 
-  let title = document.getElementsByClassName("content-block-header")[0].innerText;
-  let label = document.querySelectorAll(".label-and-due .label")[0].innerText;
+  // If url contains core_tasks
+  if(request.type === 'NOTION') {
+  if(location.href.includes("core_tasks")) {
+    chrome.storage.sync.get({
+      savedClassMap: {}
+    }, function (items) {
+      chrome.runtime.sendMessage(
+        {
+          type: 'NOTION',
+          payload: {
+            message: importCoreTasks(document, items, location.href.substring(location.href.lastIndexOf('/') + 1))
+          },
+        }
+      );
+    })
+  }
+  else if(location.href.includes("tasks_and_deadlines")) {
+    chrome.storage.sync.get({
+      savedClassMap: {}
+    }, function (items) {
+      importUpcomingTasks(items).then((result) => {
+        console.log(result)
+      chrome.runtime.sendMessage(
+        {
+          type: 'BULKNOTION',
+          payload: {
+            message: result
+          },
+        }
+      );
+      });
+    })
+  }
+}
+  // Send an empty response
+  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
+  sendResponse({});
+  return true;
+});
+
+function importCoreTasks(doc, items, id) {
+
+  let title = doc.getElementsByClassName("content-block-header")[0].innerText;
+  let label = doc.querySelectorAll(".label-and-due .label")[0].innerText;
 
   let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
-  let month = months.indexOf(document.getElementsByClassName("month")[0].innerText) + 1;
-  let day = document.getElementsByClassName("day")[0].innerText;
+  let month = months.indexOf(doc.getElementsByClassName("month")[0].innerText.toUpperCase()) + 1;
+  let day = doc.getElementsByClassName("day")[0].innerText;
   let date = new Date().getFullYear() + "-" + ("0" + month).slice(-2) + "-" + ("0" + day).slice(-2);
 
   let criteria = []
-  for(const i of document.querySelectorAll("a:has(+*[id^='core_criteria'])")) {
+  for(const i of doc.querySelectorAll("a:has(+*[id^='core_criteria'])")) {
     criteria.push({"name": i.innerText.split(':')[0]})
   }
 
@@ -37,38 +79,42 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   // Handle subject string starting with "IB MYP" / "IB DP" in future, or use class IDs
-  let subject = document.querySelectorAll(".with-indicators li a.active span")[0].innerText;
+  let subject = doc.querySelectorAll(".with-indicators li a.active span")[0].innerText;
 
-  let id = location.href.substring(location.href.lastIndexOf('/') + 1);
+  if (Object.hasOwn(items.savedClassMap, subject)) {
+    subject = items.savedClassMap[subject]
+  }
 
   let emoji = textToEmoji(title, subject);
   console.log(emoji);
+  
+  return {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date, "id": id };
+}
 
-  if (request.type == 'NOTION') {
-    // Communicate with background file by sending a message
-
-    chrome.storage.sync.get({
-      savedClassMap: {}
-    }, function (items) {
-      if (Object.hasOwn(items.savedClassMap, subject)) {
-        subject = items.savedClassMap[subject]
-      }
-      chrome.runtime.sendMessage(
-        {
-          type: 'NOTION',
-          payload: {
-            message: {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date, "id": id },
-          },
-        }
-      );
-    })
+async function importUpcomingTasks(items) {
+  let urls = [];
+  for(const i of document.querySelectorAll(".content-block .upcoming-tasks > div")) {
+    urls.push(i.querySelectorAll("a")[0].href);
   }
 
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
-  return true;
-});
+  let tasks = [];
+
+  // Get tasks from all URLs with Fetch (async) + return result (along with url)
+  const results = await Promise.all(urls.map(async url => {
+    const response = await fetch(url);
+    return {url, response};
+  }
+  ));
+
+  for(const i of results) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(await i.response.text(), "text/html");
+    tasks.push(importCoreTasks(doc, items, i.url.substring(i.url.lastIndexOf('/') + 1)));
+  }
+  
+  return tasks;
+}
+
 
 // OAuth saving
 function getUrlVars(ar){

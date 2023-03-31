@@ -19,6 +19,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       addToNotion(request.payload.message, items);
     })
   }
+  // Bulk add tasks to Notion
+  else if (request.type === 'BULKNOTION') {
+    chrome.storage.sync.get({
+      authToken: "",
+      botId: "",
+      databaseId: "",
+      databaseTemplateId: "",
+      useNotionTemplate: true
+    }, function (items) {
+      for (let i = 0; i < request.payload.message.length; i++) {
+        // Spread out the requests to avoid rate limiting
+        setTimeout(() => {
+          addToNotion(request.payload.message[i], items);
+        }, 1500 * i);
+      }
+    })
+  }
   else if(request.type === 'LOGGEDIN') {
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       chrome.tabs.remove(tabs[0].id, function() { });
