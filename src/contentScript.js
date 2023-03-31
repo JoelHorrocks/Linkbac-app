@@ -90,10 +90,13 @@ if(location.protocol + '//' + location.host + location.pathname == "https://stor
       databaseTemplateId: data["duplicated_template_id"]
   }, function () {
     document.getElementById("loading").style.display = "none";
-    document.getElementById("success").style.display = "block";
-    if(data["duplicated_template_id"] === null){
-      document.getElementById("success-text").innerHTML += "<br><p>As you didn't use the template, please set a database ID in options. (?)"
-    }
+    // Send a message to background script
+    // TODO: detect if sent from onboarding page or popup
+    chrome.runtime.sendMessage(
+      {
+        type: 'LOGGEDIN',
+      }
+    );
   }); 
   });
 }

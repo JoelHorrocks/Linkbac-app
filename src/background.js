@@ -19,6 +19,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       addToNotion(request.payload.message, items);
     })
   }
+  else if(request.type === 'LOGGEDIN') {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.remove(tabs[0].id, function() { });
+    });
+    chrome.tabs.create({url: "onboarding.html?screen=screen-2"});
+  }
   return true;
 });
 
