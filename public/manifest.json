@@ -3,6 +3,7 @@
   "name": "Link for MB",
   "version": "0.1.0",
   "description": "Link for MB to 3rd party productivity apps.",
+  "key": "KEY",
   "icons": {
     "16": "icons/icon_16.png",
     "32": "icons/icon_32.png",
@@ -17,7 +18,8 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "identity"
   ],
   "content_scripts": [
     {
@@ -30,6 +32,13 @@
       ]
     }
   ],
+  "oauth2": {
+    "client_id": "CLIENT_ID",
+    "scopes":[
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/drive.install"
+    ]
+  },
   "web_accessible_resources": [
     {
       "resources": [ "/v1/*"],

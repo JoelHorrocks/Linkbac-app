@@ -14,6 +14,7 @@ const config = (env, argv) =>
       background: PATHS.src + '/background.js',
       options: PATHS.src + '/options.js',
       onboarding: PATHS.src + '/onboarding.js',
+      notionService: PATHS.src + '/services/notionService.js',
     },
     devtool: argv.mode === 'production' ? false : 'source-map',
   });

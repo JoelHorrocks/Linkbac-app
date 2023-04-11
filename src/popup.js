@@ -5,7 +5,7 @@ import './popup.css';
 (function () {
     function setupPage() {
         document
-            .getElementById('notion')
+            .getElementById('sync')
             .addEventListener('click', () => {
                 chrome
                     .tabs
@@ -17,10 +17,10 @@ import './popup.css';
                         chrome
                             .tabs
                             .sendMessage(tab.id, {
-                                type: 'NOTION',
+                                type: 'SYNC',
                                 payload: {}
                             }, (response) => {
-                                console.log('Sent signal to contentScript to add to notion');
+                                console.log('Sent signal to contentScript to add to service');
                             });
                     });
             });
@@ -47,20 +47,52 @@ import './popup.css';
                 const tab = tabs[0];
                 if (tab.url.includes("core_tasks")) {
                     document
-                        .getElementById('notion')
+                        .getElementById('sync')
                         .style
                         .display = "block";
+                    chrome.storage.sync.get({
+                        service: ""
+                    }, function (items) {
+                        console.log(items.service)
+                        if (items.service === "notion") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync with Notion";
+                        } else if (items.service === "google-sheets") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync with Sheets";
+                        } else if (items.service === "google-calendar") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync with Calendar";
+                        }
+                    });
                 } else if (tab.url.includes("tasks_and_deadlines")) {
                     document
-                        .getElementById('notion')
+                        .getElementById('sync')
                         .style
                         .display = "block";
-                    document
-                        .getElementById('notion')
-                        .innerText = "Sync upcoming tasks with Notion";
+                    chrome.storage.sync.get({
+                        service: ""
+                    }, function (items) {
+                        if (items.service === "notion") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync upcoming tasks with Notion";
+                        } else if (items.service === "google-sheets") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync upcoming tasks with Sheets";
+                        } else if (items.service === "google-calendar") {
+                            document
+                                .getElementById('sync')
+                                .innerText = "Sync upcoming tasks with Calendar";
+                        }
+                    });
                 } else {
                     document
-                        .getElementById('notion')
+                        .getElementById('sync')
                         .style
                         .display = "none";
                 }

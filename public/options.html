@@ -3,52 +3,63 @@
 
 <head>
     <title>Link for MB Options</title>
-    <link rel="stylesheet" href="options.css" />
+    <link rel="stylesheet" href="options.css">
 </head>
 
 <body>
     <h1>Link for MB Settings</h1>
-
     <br>
-
-    <span>Select a service to link to:
-    <select id="service">
-        <option value="notion">Notion</option>
-    </select></span>
-
+    <span>Selected service:
+        <select id="service" disabled>
+            <option value="notion">Notion</option>
+            <option value="google-sheets">Sheets</option>
+        </select>
+    </span>
+    <p>Chosen service cannot be changed at this time</p>
     <br>
-
     <button class="button" id="sign-in">Sign in</button>
-
     <br><br>
-
-    <span>Class name mapping</span>
-
-    <div id="mappings">
-    </div>
-    <input id="class"><input id="class-value"><button id="map">Map class name</button>
-
-    <br><br>
-
-    <p id="template_notice">Using Link for MB template</p>
-
-    <input type="radio" id="template" name="link_type" value="Template" checked>
-    <label for="template">Use Link for MB layout</label><br>
-    <a href="https://lime-random-e9a.notion.site/b592ad5a0cfa4d358fbd9175d28bd27d?v=c80caba02d3a4cb5aa645fb9b3a68ec8">Get the template</a>
+    <span id="notion-conditional" style="display: none;">
+        <span>Class name mapping</span>
+        <div id="mappings"></div>
+        <input id="class">
+        <input id="class-value">
+        <button id="map">Map class name</button>
+        <br><br>
+        <p id="template_notice">Using Link for MB template</p>
+        <input type="radio" id="template" name="link_type" value="Template" checked>
+        <label for="template">Use Link for MB layout</label><br>
+        <a
+            href="https://lime-random-e9a.notion.site/b592ad5a0cfa4d358fbd9175d28bd27d?v=c80caba02d3a4cb5aa645fb9b3a68ec8">Get
+            the template</a>
+        <br>
+        <input type="radio" id="custom" name="link_type" value="Custom">
+        <label for="custom">Custom Notion database layout</label>
+        <br><br>
+        <input id="database_id" placeholder="Database ID">
+        <br>
+    </span>
+    <span id="sheets-conditional"  style="display: none;">
+         <!-- Spreadsheet ID -->
+          <input type="text" id="sheets-spreadsheet-id" name="sheets-spreadsheet-id" placeholder="Spreadsheet ID">
+          <!-- Sheet name -->
+          <span id="sheet-name-conditional" style="display: none;">
+            <input type="text" id="sheets-spreadsheet-name" name="sheets-spreadsheet-name" placeholder="Sheet name">
+          </span>
+          <!-- Show preview of sheet + ask user where new values should be inputted -->
+          <p class="text-xl font-medium text-gray-700 pt-8">Preview of spreadsheet (?)</p>
+          <table id="sheet-table" class="spreadsheet">
+          </table>
+          <p id="id-warning" style="display: none;">One column must be used for ID or the extension will not function</p>
+          <p id="sheet-table-error"></p>
+          <!-- loading -->
+          <svg class="animate-spin h-10 w-10 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" id="sheets-loader" style="display: none;">
+            <path fill="#000" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+          </svg>
+          <button id="refresh-sheet" class="px-4 py-2 mt-8 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">Refresh</button>
+    </span>
     <br>
-    <input type="radio" id="custom" name="link_type" value="Custom">
-    <label for="custom">Custom Notion database layout</label>
-    
-    <br><br>
-
-    <input id="database_id">
-
-    <br>
-
-   <br>
-
     <div id="status"></div>
-
     <script src="options.js"></script>
 </body>
 

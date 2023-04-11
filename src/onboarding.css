@@ -1,0 +1,23 @@
+.spreadsheet {
+	border: 1px solid #e1e1e1;
+	border-width: 1px 0px 0px 1px;
+	font-size: 10pt;
+	font-family: arial;
+	border-spacing: 0px;
+	border-collapse: collapse;
+}
+
+.spreadsheet th {
+	background-color: #ffffff;
+	border: 1px solid #c4c7c5;
+	border-width: 0px 1px 1px 0px;
+	font-weight: normal;
+}
+
+.spreadsheet td {
+	border: 0px;
+	background-color: #ffffff;
+	padding: 0px 4px 0px 2px;
+	border: 1px solid #e1e1e1;
+	border-width: 0px 1px 1px 0px;
+}

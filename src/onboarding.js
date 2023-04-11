@@ -1,29 +1,63 @@
 import './onboarding.css';
 
+let selectedService = "";
+
+function debounce(callback, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () { callback.apply(this, args); }, wait);
+    };
+}
+
 // Update and read URL parameters to find which screen to display so that the user can refresh the page and not lose their progress (and so OAuth can redirect back to the correct screen)
- document.addEventListener(
+document.addEventListener(
     "DOMContentLoaded",
     function () {
         var params = new URLSearchParams(window.location.search);
         var screen = params.get("screen");
         if (screen != null) {
-            nextScreen(screen);
+            chrome.storage.sync.get({
+                service: ""
+            }, function (items) {
+                if (items.service != "") {
+                    selectService(items.service);
+                }
+                nextScreen(screen);
+            });
         }
-        // If OAuth token is saved in Chrome extension storage, reflect that in the UI
+        
+        chrome.storage.sync.get({
+            service: ""
+        }, function (items) {
+            if(items.service == "notion") {
+
         chrome.storage.sync.get({
             authToken: ""
-          }, function (items) {
+        }, function (items) {
             if (items.authToken != "") {
-                document.getElementById("notion-sign-in-text").remove();
+                document.getElementById("sign-in-text").remove();
                 document.getElementById("notion-sign-in-button").innerHTML = "Signed in";
+                document.getElementById("sign-in-notion").style.display = "block";
                 document.getElementById("next-screen-2").disabled = false;
                 document.getElementById("next-screen-2").classList.remove("opacity-50");
                 document.getElementById("next-screen-2").classList.remove("cursor-default");
                 document.getElementById("next-screen-2").classList.add("hover:bg-blue-600");
             }
         });
-    },
-)
+            }
+            else if(items.service == "google-sheets") {
+
+        // Check if user is signed in to Google Sheets without prompting them to sign in
+        chrome.identity.getAuthToken({ interactive: false }, function (token) {
+            if (token != null) {
+                updateSignInStatus(true);
+            }
+        });
+    }
+        });
+    }
+);
 
 function nextScreen(screen) {
     document.getElementById("screen-1").style.display = "none";
@@ -34,25 +68,31 @@ function nextScreen(screen) {
 }
 
 function selectService(service) {
+    selectedService = service;
     // TODO: make this a class, remove all classes from all elements, then add the class to the selected element
 
     let services = ["notion", "google-calendar", "google-sheets"];
-    for(const i of services) {
+    for (const i of services) {
         for (const j of document.getElementById(i).childNodes) {
-            if(j.tagName == "P") {
+            if (j.tagName == "P") {
                 j.classList.remove("text-blue-500");
             }
         }
     }
 
-    
     // Set service text inside span to blue
-    
     for (var i = 0; i < document.getElementById(service).childNodes.length; i++) {
         if (document.getElementById(service).childNodes[i].tagName == "P") {
             document.getElementById(service).childNodes[i].classList.add("text-blue-500");
         }
     }
+
+    chrome.storage.sync.set({
+        service: service
+    }, function () {
+        console.log("Service set to " + service);
+    });
+
     console.log(service);
 }
 
@@ -60,24 +100,63 @@ document.getElementById("sign-in-notion").addEventListener("click", function () 
     document.location.href = 'https://storeimg.com/linkformb/oauth.php';
 });
 
+function updateSignInStatus(isSignedIn) {
+    if (isSignedIn) {
+        if (document.getElementById("sign-in-text") != null) {
+            document.getElementById("sign-in-text").remove();
+        }
+        document.getElementById("sheets-sign-in-button").innerHTML = "Signed in";
+        document.getElementById("calendar-sign-in-button").innerHTML = "Signed in";
+        document.getElementById("next-screen-2").disabled = false;
+        document.getElementById("next-screen-2").classList.remove("opacity-50");
+        document.getElementById("next-screen-2").classList.remove("cursor-default");
+        document.getElementById("next-screen-2").classList.add("hover:bg-blue-600");
+    }
+}
+
+document.getElementById("sign-in-sheets").addEventListener("click", function () {
+    chrome.identity.getAuthToken({ interactive: true }, function (token) {
+        if (token != null) {
+            updateSignInStatus(true);
+        }
+    });
+});
+
 document.getElementById("next-screen-1").addEventListener("click", function () {
     nextScreen("screen-2");
+
+    if (selectedService == "notion") {
+        document.getElementById("sign-in-notion").style.display = "block";
+    } else if (selectedService == "google-sheets") {
+        document.getElementById("sign-in-sheets").style.display = "block";
+    } else {
+        document.getElementById("sign-in-calendar").style.display = "block";
+    }
 });
 
 document.getElementById("next-screen-2").addEventListener("click", function () {
     nextScreen("screen-3");
 
-    // Hide custom-template-conditional if user is not using custom template
-    chrome.storage.sync.get({
-        databaseTemplateId: ""
-    }, function (items) {
-        if (items.databaseTemplateId == "" || items.databaseTemplateId == null) {
-            document.getElementById("custom-template-conditional").style.display = "block";
-        } else {
-            document.getElementById("custom-template-conditional").style.display = "none";
-        }
-    });
-    
+    if (selectedService == "notion") {
+        document.getElementById("notion-conditional").style.display = "block";
+
+        // Hide custom-template-conditional if user is not using custom template
+        chrome.storage.sync.get({
+            databaseTemplateId: ""
+        }, function (items) {
+            if (items.databaseTemplateId == "" || items.databaseTemplateId == null) {
+                document.getElementById("custom-template-conditional").style.display = "block";
+            } else {
+                document.getElementById("custom-template-conditional").style.display = "none";
+            }
+        });
+    } else if (selectedService == "google-sheets") {
+        document.getElementById("sheets-conditional").style.display = "block";
+    } else {
+        document.getElementById("calendar-conditional").style.display = "block";
+    }
+
+
     checkNextScreen3Valid();
 });
 
@@ -123,7 +202,7 @@ document.getElementById("class-mapping").addEventListener("click", function () {
 var classMap = {}
 
 function map_class() {
-    if(Object.hasOwn(classMap, document.getElementById("class").value)) {
+    if (Object.hasOwn(classMap, document.getElementById("class").value)) {
         alert("Class already mapped!")
         return;
     }
@@ -143,16 +222,16 @@ function map_class() {
     let valueInput = document.createElement("input")
     valueInput.value = classValue
 
-    classInput.addEventListener('change', () => { 
-        delete classMap[className]; 
-        className = classInput.value; 
-        classMap[className] = classValue; 
+    classInput.addEventListener('change', () => {
+        delete classMap[className];
+        className = classInput.value;
+        classMap[className] = classValue;
         save_options();
     })
-    valueInput.addEventListener('change', () => { 
-        classMap[className] = valueInput.value; 
+    valueInput.addEventListener('change', () => {
+        classMap[className] = valueInput.value;
         save_options();
-     })
+    })
 
     let deleteButton = document.createElement("button")
     deleteButton.innerText = "Delete"
@@ -164,7 +243,7 @@ function map_class() {
     })
 
     let elements = [classInput, valueInput, deleteButton, document.createElement("br")]
-    for(const i of elements) {
+    for (const i of elements) {
         span.appendChild(i)
     }
 
@@ -189,24 +268,222 @@ document.getElementById("next-screen-3").addEventListener("click", function () {
 });
 
 function checkNextScreen3Valid() {
-    chrome.storage.sync.get({
-        databaseTemplateId: ""
-    }, function (items) {
-        if (document.getElementById("notion-database-id").value != "" && (document.getElementById("notion-template").checked == true || document.getElementById("custom-notion-database").checked == true)) {
-            document.getElementById("next-screen-3").disabled = false;
-            document.getElementById("next-screen-3").classList.remove("opacity-50");
-            document.getElementById("next-screen-3").classList.remove("cursor-default");
-            document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
-        } else if(items.databaseTemplateId != "" && items.databaseTemplateId != null) {
-            document.getElementById("next-screen-3").disabled = false;
-            document.getElementById("next-screen-3").classList.remove("opacity-50");
-            document.getElementById("next-screen-3").classList.remove("cursor-default");
-            document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
-        } else {
-            document.getElementById("next-screen-3").disabled = true;
-            document.getElementById("next-screen-3").classList.add("opacity-50");
-            document.getElementById("next-screen-3").classList.add("cursor-default");
-            document.getElementById("next-screen-3").classList.remove("hover:bg-blue-600");
+    if(selectedService == "notion") {
+        chrome.storage.sync.get({
+            databaseTemplateId: ""
+        }, function (items) {
+            if (document.getElementById("notion-database-id").value != "" && (document.getElementById("notion-template").checked == true || document.getElementById("custom-notion-database").checked == true)) {
+                document.getElementById("next-screen-3").disabled = false;
+                document.getElementById("next-screen-3").classList.remove("opacity-50");
+                document.getElementById("next-screen-3").classList.remove("cursor-default");
+                document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
+            } else if (items.databaseTemplateId != "" && items.databaseTemplateId != null) {
+                document.getElementById("next-screen-3").disabled = false;
+                document.getElementById("next-screen-3").classList.remove("opacity-50");
+                document.getElementById("next-screen-3").classList.remove("cursor-default");
+                document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
+            } else {
+                document.getElementById("next-screen-3").disabled = true;
+                document.getElementById("next-screen-3").classList.add("opacity-50");
+                document.getElementById("next-screen-3").classList.add("cursor-default");
+                document.getElementById("next-screen-3").classList.remove("hover:bg-blue-600");
+            }
+        });
+    }
+    else if (selectedService == "google-sheets") {
+        // get table, check if number of select inputs is more than 0, and if so, make sure one is set to ID. if so, enable next button
+        let table = document.getElementById("sheet-table")
+        let select = table.getElementsByTagName("select")
+        let idSelected = false
+        for (let i = 0; i < select.length; i++) {
+            if (select[i].value == "id") {
+                idSelected = true
+            }
         }
+        if (idSelected) {
+            document.getElementById("next-screen-3").disabled = false;
+            document.getElementById("next-screen-3").classList.remove("opacity-50");
+            document.getElementById("next-screen-3").classList.remove("cursor-default");
+            document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
+        }
+    }
+}
+
+document.getElementById("sheets-spreadsheet-id").addEventListener("keyup", debounce(() => {
+    chrome.storage.sync.set({
+        spreadsheetId: document.getElementById("sheets-spreadsheet-id").value
+    });
+    updateSpreadsheetPreview();
+    //checkNextScreen3Valid();
+}, 1000));
+
+document.getElementById("sheets-spreadsheet-name").addEventListener("keyup", debounce(() => {
+    chrome.storage.sync.set({
+        spreadsheetName: document.getElementById("sheets-spreadsheet-name").value
+    });
+    updateSpreadsheetPreview();
+}, 1000));
+
+function updateSpreadsheetPreview() {
+    document.getElementById("sheets-loader").style.display = "block";
+    document.getElementById("sheet-table-error").innerText = "";
+    document.getElementById("sheet-table").innerHTML = "";
+    if (document.getElementById("sheets-spreadsheet-id").value == "") {
+        document.getElementById("sheets-loader").style.display = "none";
+        document.getElementById("sheet-table-error").innerText = "Please enter spreadsheet ID";
+        return;
+    }
+    chrome.identity.getAuthToken({ interactive: true }, function (token) {
+        chrome.storage.sync.get({
+            spreadsheetId: "",
+            spreadsheetName: ""
+        }, function (items) {
+            const init = {
+                method: 'GET',
+                async: true,
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors',
+                cache: 'default'
+            };
+            // get spreadsheet from sheets api
+            fetch(
+                'https://sheets.googleapis.com/v4/spreadsheets/' + items.spreadsheetId + '?key=SHEETS_KEY',
+                init
+            )
+                .then((response) => {
+                    if (response.status != 200) {
+                        document.getElementById("sheets-loader").style.display = "none";
+                        document.getElementById("sheet-table-error").innerText = "Error retrieving spreadsheet. Please check the spreadsheet ID, make sure you have completed the 'Open with Link for MB' process and try again.";
+                    }
+                    return response.json();
+                })
+                .then((json) => {
+                    if (json.sheets.length > 1) {
+                        document.getElementById("sheet-name-conditional").style.display = "block";
+
+                        if (items.spreadsheetName != "" && document.getElementById("sheets-spreadsheet-name").value != "") {
+                            // get sheet from sheets api
+                            fetch(
+                                'https://sheets.googleapis.com/v4/spreadsheets/' + items.spreadsheetId + '/values/' + items.spreadsheetName + '?key=SHEETS_KEY',
+                                init
+                            )
+                                .then((response) => {
+                                    if (response.status != 200) {
+                                        document.getElementById("sheets-loader").style.display = "none";
+                                        document.getElementById("sheet-table-error").innerText = "Error retrieving sheet. Please check the sheet name and try again.";
+                                    }
+                                    return response.json();
+                                })
+                                .then((json) => {
+                                    document.getElementById("sheets-loader").style.display = "none";
+                                    if (json.values == undefined) {
+                                        document.getElementById("sheet-table-error").innerText = "No rows found in sheet. Please check the sheet name and try again.";
+                                        return;
+                                    }
+                                    else if (json.values[0].length == 0) {
+                                        document.getElementById("sheet-table-error").innerText = "No header row found in sheet. Please create a header row in the sheet in the top row.";
+                                        return;
+                                    }
+                                    let rows = json.values;
+                                    displaySpreadsheetPreview(rows);
+                                    document.getElementById("sheet-table-error").innerText = "";
+                                })
+                        }
+                        else if (items.spreadsheetName == "" || document.getElementById("sheets-spreadsheet-name").value == "") {
+                            document.getElementById("sheets-loader").style.display = "none";
+                            document.getElementById("sheet-table").innerHTML = "";
+                            document.getElementById("sheet-table-error").innerText = "Please enter a sheet name.";
+                        }
+                    }
+                    else {
+                        document.getElementById("sheet-name-conditional").style.display = "none";
+                        fetch(
+                            'https://sheets.googleapis.com/v4/spreadsheets/' + items.spreadsheetId + '/values/' + json.sheets[0].properties.title + '?key=SHEETS_KEY',
+                            init
+                        )
+                            .then((response) => {
+                                if (response.status != 200) {
+                                    document.getElementById("sheets-loader").style.display = "none";
+                                    document.getElementById("sheet-table-error").innerText = "Error retrieving sheet. Please check the sheet name and try again.";
+                                }
+                                return response.json();
+                            }
+                            )
+                            .then((json) => {
+                                document.getElementById("sheets-loader").style.display = "none";
+                                if (json.values == undefined) {
+                                    document.getElementById("sheet-table-error").innerText = "No rows found in sheet. Please create a header row in the sheet.";
+                                    return;
+                                }
+                                else if (json.values[0].length == 0) {
+                                    document.getElementById("sheet-table-error").innerText = "No header row found in sheet. Please create a header row in the sheet in the top row.";
+                                    return;
+                                }
+                                let rows = json.values;
+                                displaySpreadsheetPreview(rows);
+                                document.getElementById("sheet-table-error").innerText = "";
+                            })
+
+                    }
+                }
+                )
+
+        });
     });
 }
+
+function displaySpreadsheetPreview(rows) {
+    document.getElementById("sheet-table").innerHTML = "";
+
+    let headers = rows[0];
+
+    // show in table
+    let tr = document.createElement("tr")
+    document.getElementById("sheet-table").appendChild(tr)
+    let options = document.createElement("tr")
+    document.getElementById("sheet-table").appendChild(options)
+
+    for (const i of headers) {
+        let th = document.createElement("th")
+        th.innerText = i
+        tr.appendChild(th)
+        let option = document.createElement("td")
+        let select = document.createElement("select")
+
+        let selectOptions = [{ value: "none", text: "None" }, { value: "id", text: "ID" }, { value: "title", text: "Title" }, { value: "type", text: "Type" }, { value: "class", text: "Class" }, { value: "criteria", text: "Criteria" }, { value: "date", text: "Date" }, { value: "emoji", text: "Emoji" }]
+        for (const j of selectOptions) {
+            let option = document.createElement("option")
+            option.value = j.value
+            option.innerText = j.text
+            select.appendChild(option)
+        }
+
+        option.appendChild(select)
+        options.appendChild(option)
+    }
+
+    // add event listeners to select
+    let selects = options.getElementsByTagName("select")
+    for (const i of selects) {
+        i.addEventListener("change", function () {
+            // log comma separated values of all selects
+            let values = ""
+            for (const j of selects) {
+                values += "${" + j.value + "},"
+            }
+
+            chrome.storage.sync.set({
+                spreadsheetTemplate: values.substring(0, values.length - 1)
+            });
+            checkNextScreen3Valid();
+        });
+    }
+    document.getElementById("sheets-loader").style.display = "none";
+}
+
+document.getElementById("refresh-sheet").addEventListener("click", function () {
+    updateSpreadsheetPreview();
+});

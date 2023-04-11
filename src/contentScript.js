@@ -20,14 +20,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
   // If url contains core_tasks
-  if(request.type === 'NOTION') {
+  if(request.type === 'SYNC') {
   if(location.href.includes("core_tasks")) {
     chrome.storage.sync.get({
       savedClassMap: {}
     }, function (items) {
       chrome.runtime.sendMessage(
         {
-          type: 'NOTION',
+          type: 'SYNC',
           payload: {
             message: importCoreTasks(document, items, location.href.substring(location.href.lastIndexOf('/') + 1))
           },
@@ -43,7 +43,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log(result)
       chrome.runtime.sendMessage(
         {
-          type: 'BULKNOTION',
+          type: 'BULKSYNC',
           payload: {
             message: result
           },
