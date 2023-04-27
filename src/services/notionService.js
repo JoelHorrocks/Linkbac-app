@@ -12,6 +12,20 @@ export const notionService = {
         databaseId = items.databaseId;
     }
 
+    let aiDescription = null;
+    
+    // Get AI description from AI service if enabled
+    if (items.useAI) {
+        const aiResponse = await fetch("https://api.openai.com/v1/engines/davinci/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+        const aiData = await aiResponse.json();
+        aiDescription = aiData["choices"][0]["text"];
+    }
+
     // Update task if a task with its ID is already in the Notion database
     if (message["id"] != null) {
         try {
@@ -70,7 +84,41 @@ export const notionService = {
                             icon: {
                                 type: "emoji",
                                 emoji: message["emoji"]
-                            }
+                            },
+                            children: [
+                                // if message["description"] is null, do not add a description, otherwise add it
+                                message["description"] != null
+                                    ? {
+                                        object: "block",
+                                        type: "paragraph",
+                                        paragraph: {
+                                            rich_text : [
+                                                {
+                                                    type: "text",
+                                                    text: {
+                                                        content: message["description"]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                    : {},
+                                // if AI is enabled, add the AI-generated description
+                                items.useAI && aiDescription != null ? {
+                                    object: "block",
+                                    type: "paragraph",
+                                    paragraph: {
+                                        rich_text : [
+                                            {
+                                                type: "text",
+                                                text: {
+                                                    content: aiDescription
+                                                }
+                                            }
+                                        ]
+                                    }
+                                } : {}
+                            ]
                         })
                     console.log(addResponse)
                     console.log("Success! Entry added.")

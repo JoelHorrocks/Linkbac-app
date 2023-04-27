@@ -62,6 +62,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function importCoreTasks(doc, items, id) {
 
   let title = doc.getElementsByClassName("content-block-header")[0].innerText;
+  let description = doc.getElementsByClassName("fr-element").length == 0 ? null : Array.from(doc.getElementsByClassName("fr-element")[0].getElementsByTagName("p")).map(x => x.innerText).join("\n");
   let label = doc.querySelectorAll(".label-and-due .label")[0].innerText;
 
   let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
@@ -88,7 +89,7 @@ function importCoreTasks(doc, items, id) {
   let emoji = textToEmoji(title, subject);
   console.log(emoji);
   
-  return {"title": title, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date, "id": id };
+  return {"title": title, "description": description, "emoji": emoji, "type": label, "class": subject.replace(/,/g, ''), "criteria": criteria, "date": date, "id": id };
 }
 
 async function importUpcomingTasks(items) {

@@ -1,7 +1,7 @@
 {
-  "name": "link-for-mb",
+  "name": "LinkBac",
   "version": "0.1.0",
-  "description": "Link for MB to 3rd party productivity apps.",
+  "description": "LinkBac to 3rd party productivity apps.",
   "private": true,
   "scripts": {
     "watch": "webpack --mode=development --watch --config config/webpack.config.js",

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Link for MB",
+  "name": "Linkbac.app",
   "version": "0.1.0",
   "description": "Link for MB to 3rd party productivity apps.",
   "key": "KEY",
@@ -14,7 +14,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Link for MB",
+    "default_title": "Linkbac.app",
     "default_popup": "popup.html"
   },
   "permissions": [
