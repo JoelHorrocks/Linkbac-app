@@ -42,7 +42,7 @@ document.addEventListener(
                 document.getElementById("next-screen-2").disabled = false;
                 document.getElementById("next-screen-2").classList.remove("opacity-50");
                 document.getElementById("next-screen-2").classList.remove("cursor-default");
-                document.getElementById("next-screen-2").classList.add("hover:bg-blue-600");
+                document.getElementById("next-screen-2").classList.add("hover:bg-lime-800");
             }
         });
             }
@@ -70,8 +70,8 @@ function nextScreen(screen) {
 function selectService(service) {
     selectedService = service;
     // TODO: make this a class, remove all classes from all elements, then add the class to the selected element
-
-    let services = ["notion", "google-calendar", "google-sheets"];
+    // , "google-calendar"
+    let services = ["notion", "google-sheets"];
     for (const i of services) {
         for (const j of document.getElementById(i).childNodes) {
             if (j.tagName == "P") {
@@ -93,6 +93,12 @@ function selectService(service) {
         console.log("Service set to " + service);
     });
 
+    // un disable next button
+    document.getElementById("next-screen-1").disabled = false;
+    document.getElementById("next-screen-1").classList.remove("opacity-50");
+    document.getElementById("next-screen-1").classList.remove("cursor-default");
+    document.getElementById("next-screen-1").classList.add("hover:bg-lime-800");
+
     console.log(service);
 }
 
@@ -110,7 +116,7 @@ function updateSignInStatus(isSignedIn) {
         document.getElementById("next-screen-2").disabled = false;
         document.getElementById("next-screen-2").classList.remove("opacity-50");
         document.getElementById("next-screen-2").classList.remove("cursor-default");
-        document.getElementById("next-screen-2").classList.add("hover:bg-blue-600");
+        document.getElementById("next-screen-2").classList.add("hover:bg-lime-800");
     }
 }
 
@@ -168,9 +174,9 @@ document.getElementById("google-sheets").addEventListener("click", function () {
     selectService("google-sheets");
 });
 
-document.getElementById("google-calendar").addEventListener("click", function () {
+/*document.getElementById("google-calendar").addEventListener("click", function () {
     selectService("google-calendar");
-});
+});*/
 
 // Allow selecting either custom template or built-in template using radio selection
 document.getElementById("notion-template").addEventListener("click", function () {
@@ -276,12 +282,12 @@ function checkNextScreen3Valid() {
                 document.getElementById("next-screen-3").disabled = false;
                 document.getElementById("next-screen-3").classList.remove("opacity-50");
                 document.getElementById("next-screen-3").classList.remove("cursor-default");
-                document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
+                document.getElementById("next-screen-3").classList.add("hover:bg-lime-800");
             } else if (items.databaseTemplateId != "" && items.databaseTemplateId != null) {
                 document.getElementById("next-screen-3").disabled = false;
                 document.getElementById("next-screen-3").classList.remove("opacity-50");
                 document.getElementById("next-screen-3").classList.remove("cursor-default");
-                document.getElementById("next-screen-3").classList.add("hover:bg-blue-600");
+                document.getElementById("next-screen-3").classList.add("hover:bg-lime-800");
             } else {
                 document.getElementById("next-screen-3").disabled = true;
                 document.getElementById("next-screen-3").classList.add("opacity-50");

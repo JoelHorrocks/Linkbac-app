@@ -15,12 +15,16 @@ export const notionService = {
     let aiDescription = null;
     
     // Get AI description from AI service if enabled
+    // TODO: protect endpoint with API key / request filtering / rate limiting / etc.
     if (items.useAI) {
-        const aiResponse = await fetch("https://api.openai.com/v1/engines/davinci/completions", {
+        const aiResponse = await fetch("GENERATION_API_LINK", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
+            body : JSON.stringify({
+                "prompt": message["description"],
+            })
         })
         const aiData = await aiResponse.json();
         aiDescription = aiData["choices"][0]["text"];
