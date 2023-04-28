@@ -39,7 +39,8 @@ chrome
                     botId: "",
                     databaseId: "",
                     databaseTemplateId: "",
-                    useNotionTemplate: true
+                    useNotionTemplate: true,
+                    service: ""
                 }, function (items) {
                     for (let i = 0; i < request.payload.message.length; i++) {
                         // Spread out the requests to avoid rate limiting
@@ -67,5 +68,5 @@ chrome
                 .tabs
                 .create({url: "onboarding.html?screen=screen-2"});
         }
-        return true;
+        //return true;
     });

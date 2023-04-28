@@ -93,6 +93,12 @@ function importCoreTasks(doc, items, id) {
 }
 
 async function importUpcomingTasks(items) {
+  // Press "show more" (inside upcoming class div) button until all tasks are loaded
+  while(document.querySelectorAll(".content-block .upcoming-tasks .show-more-link").length > 0) {
+    document.querySelectorAll(".content-block .upcoming-tasks .show-more-link a")[0].click();
+    await new Promise(r => setTimeout(r, 1000));
+  }
+
   let urls = [];
   for(const i of document.querySelectorAll(".content-block .upcoming-tasks > div")) {
     urls.push(i.querySelectorAll("a")[0].href);

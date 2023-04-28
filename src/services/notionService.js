@@ -11,25 +11,7 @@ export const notionService = {
     } else {
         databaseId = items.databaseId;
     }
-
-    let aiDescription = null;
     
-    // Get AI description from AI service if enabled
-    // TODO: protect endpoint with API key / request filtering / rate limiting / etc.
-    if (items.useAI) {
-        const aiResponse = await fetch("GENERATION_API_LINK", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body : JSON.stringify({
-                "prompt": message["description"],
-            })
-        })
-        const aiData = await aiResponse.json();
-        aiDescription = aiData["choices"][0]["text"];
-    }
-
     // Update task if a task with its ID is already in the Notion database
     if (message["id"] != null) {
         try {
@@ -106,22 +88,7 @@ export const notionService = {
                                             ]
                                         }
                                     }
-                                    : {},
-                                // if AI is enabled, add the AI-generated description
-                                items.useAI && aiDescription != null ? {
-                                    object: "block",
-                                    type: "paragraph",
-                                    paragraph: {
-                                        rich_text : [
-                                            {
-                                                type: "text",
-                                                text: {
-                                                    content: aiDescription
-                                                }
-                                            }
-                                        ]
-                                    }
-                                } : {}
+                                    : {}
                             ]
                         })
                     console.log(addResponse)
