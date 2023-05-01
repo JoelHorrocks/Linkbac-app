@@ -251,7 +251,18 @@ function displaySpreadsheetPreview(rows, items) {
         let option = document.createElement("td")
         let select = document.createElement("select")
 
-        let selectOptions = [{ value: "none", text: "None" }, { value: "id", text: "ID" }, { value: "title", text: "Title" }, { value: "type", text: "Type" }, { value: "class", text: "Class" }, { value: "criteria", text: "Criteria" }, { value: "date", text: "Date" }, { value: "emoji", text: "Emoji" }]
+        let selectOptions = [
+            { value: "none", text: "None" }, 
+            { value: "id", text: "ID" }, 
+            { value: "title", text: "Title" }, 
+            { value: "description", text: "Description" },
+            { value: "type", text: "Type" }, 
+            { value: "class", text: "Class" }, 
+            { value: "criteria", text: "Criteria" }, 
+            { value: "date", text: "Date" }, 
+            { value: "emoji", text: "Emoji" }
+        ]
+
         for (const j of selectOptions) {
             let option = document.createElement("option")
             option.value = j.value
