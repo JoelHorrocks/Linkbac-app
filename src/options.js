@@ -72,13 +72,13 @@ function restore_options() {
                     }, function () {
                         document.getElementById("sign-in").innerHTML = "Sign in";
                         document.getElementById("sign-in").addEventListener(
-                            'click', () => { document.location.href = "https://storeimg.com/linkformb/oauth.php"; })
+                            'click', () => { document.location.href = "https://linkbac.app/oauth/oauth.php"; })
                     }
                     )
                 })
         } else {
             document.getElementById("sign-in").addEventListener(
-                'click', () => { document.location.href = "https://storeimg.com/linkformb/oauth.php"; })
+                'click', () => { document.location.href = "https://linkbac.app/oauth/oauth.php"; })
         }
 
         classMap = items.savedClassMap;

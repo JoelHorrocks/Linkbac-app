@@ -103,7 +103,7 @@ function selectService(service) {
 }
 
 document.getElementById("sign-in-notion").addEventListener("click", function () {
-    document.location.href = 'https://storeimg.com/linkformb/oauth.php';
+    document.location.href = 'https://linkbac.app/oauth/oauth.php';
 });
 
 function updateSignInStatus(isSignedIn) {

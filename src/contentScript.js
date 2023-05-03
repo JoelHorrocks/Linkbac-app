@@ -133,8 +133,8 @@ function getUrlVars(ar){
   return vars;
   }
 
-if(location.protocol + '//' + location.host + location.pathname == "https://storeimg.com/linkformb/oauth-done.php") {
-  fetch("https://storeimg.com/linkformb/oauth-code.php?code=" + getUrlVars(location.href)["code"]).then((response) => response.json())
+if(location.protocol + '//' + location.host + location.pathname == "https://linkbac.app/oauth/oauth-done.php") {
+  fetch("https://linkbac.app/oauth/oauth-code.php?code=" + getUrlVars(location.href)["code"]).then((response) => response.json())
   .then((data) => {
     console.log(data)
     chrome.storage.sync.set({
