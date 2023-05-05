@@ -238,7 +238,7 @@ function map_class() {
         classMap[className] = valueInput.value;
         save_options();
     })
-
+    
     let deleteButton = document.createElement("button")
     deleteButton.innerText = "Delete"
 
