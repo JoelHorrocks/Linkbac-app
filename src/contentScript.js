@@ -25,14 +25,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.sync.get({
       savedClassMap: {}
     }, function (items) {
-      chrome.runtime.sendMessage(
+      // get response await
+      (async () => {
+      const response = await chrome.runtime.sendMessage(
         {
           type: 'SYNC',
           payload: {
             message: importCoreTasks(document, items, location.href.substring(location.href.lastIndexOf('/') + 1))
           },
         }
-      );
+      )
+      // pass back to popup
+      sendResponse(response);
+      })();
     })
   }
   else if(location.href.includes("tasks_and_deadlines")) {
@@ -55,7 +60,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 }
   // Send an empty response
   // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
+  // sendResponse({});
   return true;
 });
 

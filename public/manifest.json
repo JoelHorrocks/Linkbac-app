@@ -18,6 +18,7 @@
     "default_popup": "popup.html"
   },
   "permissions": [
+    "tabs",
     "storage",
     "identity"
   ],
@@ -47,6 +48,9 @@
         "https://api.notion.com/*"
       ]
     }
+  ],
+  "host_permissions": [
+    "https://api.notion.com/*"
   ],
   "options_page": "options.html"
 }

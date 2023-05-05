@@ -23,8 +23,12 @@ chrome
                     useNotionTemplate: true,
                     service: ""
                 }, function (items) {
-                    if(items.service === "notion") {
-                        notionService.addToService(request.payload.message, items);
+                    if (items.service === "notion") {
+                        (async () => {
+                            let response = await notionService.addToService(request.payload.message, items);
+                            console.log(response);
+                            sendResponse(response);
+                        })();
                     } else if (items.service === "google-sheets") {
                         sheetsService.addToService(request.payload.message, items);
                     }
@@ -45,7 +49,7 @@ chrome
                     for (let i = 0; i < request.payload.message.length; i++) {
                         // Spread out the requests to avoid rate limiting
                         setTimeout(() => {
-                            if(items.service === "notion") {
+                            if (items.service === "notion") {
                                 notionService.addToService(request.payload.message[i], items);
                             } else if (items.service === "google-sheets") {
                                 sheetsService.addToService(request.payload.message[i], items);
@@ -62,11 +66,11 @@ chrome
                 }, function (tabs) {
                     chrome
                         .tabs
-                        .remove(tabs[0].id, function () {});
+                        .remove(tabs[0].id, function () { });
                 });
             chrome
                 .tabs
-                .create({url: "onboarding.html?screen=screen-2"});
+                .create({ url: "onboarding.html?screen=screen-2" });
         }
-        //return true;
+        return true;
     });

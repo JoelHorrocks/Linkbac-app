@@ -4,9 +4,14 @@ import './popup.css';
 
 (function () {
     function setupPage() {
+        document.getElementById('closebtn').addEventListener('click', () => {
+            document.getElementById('alert').classList.add('hidden');
+        });
         document
             .getElementById('sync')
             .addEventListener('click', () => {
+                // show loading
+                document.getElementById("loader").classList.remove("hidden");
                 chrome
                     .tabs
                     .query({
@@ -20,8 +25,61 @@ import './popup.css';
                                 type: 'SYNC',
                                 payload: {}
                             }, (response) => {
-                                console.log('Sent signal to contentScript to add to service');
-                            });
+                                if(response.success) {
+                                    document.getElementById("loader").classList.add("hidden");
+                                    document.getElementById("checkmark").classList.remove("hidden");
+                                    setTimeout(() => {
+                                        document.getElementById("checkmark").classList.add("hidden-fade");
+                                        setTimeout(() => {
+                                            document.getElementById("checkmark").classList.add("hidden");
+                                            document.getElementById("checkmark").classList.remove("hidden-fade");
+                                        }, 200);
+                                    }, 2000);
+                                }
+                                else {
+                                    chrome.storage.sync.get({
+                                        service: ""
+                                    }, function (items) {
+                                    document.getElementById("loader").classList.add("hidden");
+                                    document.getElementById("cross").classList.remove("hidden");
+                                    document.getElementById("alert").classList.remove("hidden");
+                                    // Interpret Notion error messages
+                                    if(items.service === "notion") {
+                                    if(response.error.includes("invalid_request_url")) {
+                                        document.getElementById("alert-text").innerText = "Sync failed. Please check your Notion database ID in the settings.";
+                                    }
+                                    else if(response.error.includes("unauthorized")) {
+                                        document.getElementById("alert-text").innerText = "Sync failed. Your Notion auth token is invalid. Please sign out of Notion and back in again in settings.";
+                                    }
+                                    else if(response.error.includes("object_not_found")) {
+                                        document.getElementById("alert-text").innerText = "Sync failed. Linkbac does not have access to your Notion database. Please sign out of Notion and back in again in settings and give the Linkbac integration access to your database.";
+                                    }
+                                    else if(response.error == undefined) {
+                                        document.getElementById("alert-text").innerText = "Sync failed. Please check your internet connection and try again.";
+                                    }
+                                    else {
+                                        document.getElementById("alert-text").innerText = "Sync failed. An unknown error occured. Please try again.";
+                                    }
+                                }
+                                    setTimeout(() => {
+                                        document.getElementById("cross").classList.add("hidden-fade");
+                                        setTimeout(() => {
+                                            document.getElementById("cross").classList.add("hidden");
+                                            document.getElementById("cross").classList.remove("hidden-fade");
+                                        }, 200);
+                                    }, 2000);
+                                    setTimeout(() => {
+                                        document.getElementById("alert").classList.add("hidden-fade");
+                                        setTimeout(() => {
+                                            document.getElementById("alert").classList.add("hidden");
+                                            document.getElementById("alert").classList.remove("hidden-fade");
+                                        }
+                                        , 200);
+                                    }
+                                    , 15000);
+                                });
+                            };
+                        });
                     });
             });
         document
@@ -56,17 +114,13 @@ import './popup.css';
                         console.log(items.service)
                         if (items.service === "notion") {
                             document
-                                .getElementById('sync')
+                                .getElementById('sync-text')
                                 .innerText = "Sync with Notion";
                         } else if (items.service === "google-sheets") {
                             document
-                                .getElementById('sync')
+                                .getElementById('sync-text')
                                 .innerText = "Sync with Sheets";
-                        } else if (items.service === "google-calendar") {
-                            document
-                                .getElementById('sync')
-                                .innerText = "Sync with Calendar";
-                        }
+                        } 
                     });
                 } else if (tab.url.includes("tasks_and_deadlines")) {
                     document
@@ -78,16 +132,12 @@ import './popup.css';
                     }, function (items) {
                         if (items.service === "notion") {
                             document
-                                .getElementById('sync')
+                                .getElementById('sync-text')
                                 .innerText = "Sync upcoming tasks with Notion";
                         } else if (items.service === "google-sheets") {
                             document
-                                .getElementById('sync')
+                                .getElementById('sync-text')
                                 .innerText = "Sync upcoming tasks with Sheets";
-                        } else if (items.service === "google-calendar") {
-                            document
-                                .getElementById('sync')
-                                .innerText = "Sync upcoming tasks with Calendar";
                         }
                     });
                 } else {

@@ -1,19 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Link for MB</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="app">
-      <img src="icons/icon_128.png" height="96"/>
-      <br>
-      <button class="button button-primary" id="sync">Sync</button>
-      <br>
-      <button class="button button-outline" id="settings">Settings</button>
-    </div>
 
-    <script src="popup.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Link for MB</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+  <div class="app">
+    <div class="alert hidden" id="alert">
+      <span class="closebtn" id="closebtn">&times;</span>
+      <span id="alert-text"></span>
+    </div>
+    <img src="icons/icon_128.png" height="96" />
+    <br>
+    <button class="button button-primary" id="sync">
+      <svg aria-hidden="true" role="status" id="loader" class="loader hidden" viewBox="0 0 24 24" fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"
+          fill="currentColor" />
+      </svg>
+      <svg aria-hidden="true" role="status" id="checkmark" class="checkmark hidden" viewBox="0 0 130.2 130.2">
+        <circle class="path circle" fill="none" stroke="currentColor" stroke-width="12" stroke-miterlimit="10" cx="65.1"
+          cy="65.1" r="59" />
+        <polyline class="path check" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+          stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 " />
+      </svg>
+      <svg aria-hidden="true" role="status" id="cross" class="checkmark hidden" viewBox="0 0 130.2 130.2">
+        <circle class="path circle" fill="none" stroke="currentColor" stroke-width="10" stroke-miterlimit="10" cx="65.1"
+          cy="65.1" r="59" />
+        <line class="path line" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+          stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3" />
+        <line class="path line" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"
+          stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2" />
+      </svg>
+      <span id="sync-text">Sync</span>
+    </button>
+    <br>
+    <button class="button button-outline" id="settings">Settings</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+
 </html>

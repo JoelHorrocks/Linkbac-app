@@ -98,3 +98,120 @@ code {
   border: 0.5px dashed #000;
   opacity: 0.1;
 }
+
+@-moz-keyframes spin {
+  from { -moz-transform: rotate(0deg); }
+  to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
+
+.loader {
+  display: inline;
+  width: 16px;
+  height: auto;
+  animation: spin 1s linear infinite;
+  margin-right: 0.3rem;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+
+
+.checkmark {
+  display: inline;
+  width: 16px;
+  height: auto;
+  margin-right: 0.3rem;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+.checkmark .path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
+}
+.checkmark .path.circle {
+  -webkit-animation: dash 0.9s ease-in-out;
+  animation: dash 0.9s ease-in-out;
+}
+.checkmark .path.line {
+  stroke-dashoffset: 1000;
+  -webkit-animation: dash 0.9s 0.35s ease-in-out forwards;
+  animation: dash 0.9s 0.35s ease-in-out forwards;
+}
+.checkmark .path.check {
+  stroke-dashoffset: -100;
+  -webkit-animation: dash-check 0.9s 0.35s ease-in-out forwards;
+  animation: dash-check 0.9s 0.35s ease-in-out forwards;
+}
+
+@-webkit-keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@-webkit-keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
+}
+@keyframes dash-check {
+  0% {
+    stroke-dashoffset: -100;
+  }
+  100% {
+    stroke-dashoffset: 900;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.hidden-fade {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.alert {
+  padding: 20px;
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-bottom: 15px;
+  /* appear over the top of the extension */
+  position: absolute;
+  z-index: 9999;
+  top: 8px;
+  right: 8px;
+  left: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  cursor: pointer;
+  transition: 0.3s;
+}
