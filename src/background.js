@@ -21,6 +21,7 @@ chrome
                     databaseId: "",
                     databaseTemplateId: "",
                     useNotionTemplate: true,
+                    notionTemplate: "",
                     service: ""
                 }, function (items) {
                     if (items.service === "notion") {

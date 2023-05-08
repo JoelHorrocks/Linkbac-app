@@ -1,6 +1,7 @@
 'use strict';
 
 import './options.css';
+import {Client} from "@notionhq/client";
 
 var classMap = {}
 
@@ -29,6 +30,13 @@ function save_options() {
         setTimeout(function () {
             status.textContent = '';
         }, 750);
+
+        if(useNotionTemplate) {
+            document.getElementById("notion-custom-conditional").style.display = "none";
+        }
+        else {
+            document.getElementById("notion-custom-conditional").style.display = "block";
+        }
     });
 }
 
@@ -47,7 +55,8 @@ function restore_options() {
         service: "",
         spreadsheetId: "",
         spreadsheetName: "",
-        spreadsheetTemplate: ""
+        spreadsheetTemplate: "",
+        notionTemplate: "",
     }, function (items) {
         document.getElementById('service').value = items.chosenService;
         document.getElementById('template').checked = items.useNotionTemplate;
@@ -126,6 +135,23 @@ function restore_options() {
 
         if (items.service == "notion") {
             document.getElementById("notion-conditional").style.display = "block";
+            if(!items.useNotionTemplate) {
+                document.getElementById("notion-custom-conditional").style.display = "block";
+
+                // Get database headers
+                const notion = new Client({ auth: items.authToken });
+                notion.databases.retrieve({ database_id: items.databaseId })
+                    .then(response => {
+                        let properties = response.properties;
+                        properties = Object.keys(properties).map(key => properties[key].name);
+                        console.log(properties);
+                        displayNotionPreview(properties, items);
+
+                        // STORE TYPE OF EACH COLUMN, CAST TO THAT TYPE WHEN SENDING TO NOTION
+                        // REFACTOR
+                    }
+                    )
+            }
         }
         else if (items.service == "google-sheets") {
             document.getElementById("sheets-conditional").style.display = "block";
@@ -233,6 +259,73 @@ function restore_options() {
     });
 }
 
+function displayNotionPreview(headers, items) {
+    document.getElementById("notion-table").innerHTML = "";
+
+    // show in table
+    let tr = document.createElement("tr")
+    document.getElementById("notion-table").appendChild(tr)
+    let options = document.createElement("tr")
+    document.getElementById("notion-table").appendChild(options)
+
+    for (const i of headers) {
+        let th = document.createElement("th")
+        th.innerText = i
+        tr.appendChild(th)
+        let option = document.createElement("td")
+        let select = document.createElement("select")
+
+        let selectOptions = [
+            { value: "none", text: "None" }, 
+            { value: "id", text: "ID" }, 
+            { value: "title", text: "Title" }, 
+            { value: "description", text: "Description" },
+            { value: "type", text: "Type" }, 
+            { value: "class", text: "Class" }, 
+            { value: "criteria", text: "Criteria" }, 
+            { value: "date", text: "Date" }, 
+            { value: "emoji", text: "Emoji" }
+        ]
+
+        for (const j of selectOptions) {
+            let option = document.createElement("option")
+            option.value = j.value
+            option.innerText = j.text
+            select.appendChild(option)
+        }
+
+        option.appendChild(select)
+        options.appendChild(option)
+    }
+
+    let selects = options.getElementsByTagName("select")
+    for (const i of selects) {
+        if (items.notionTemplate.split(",").length == selects.length) {
+            let values = items.notionTemplate.split(",")
+            i.value = values[Array.from(selects).indexOf(i)].replace("${", "").replace("}", "")
+        }
+        i.addEventListener("change", function () {
+            // log comma separated values of all selects
+            let values = ""
+            for (const j of selects) {
+                values += "${" + j.value + "},"
+            }
+
+            chrome.storage.sync.set({
+                notionTemplate: values.substring(0, values.length - 1)
+            });
+
+            // Warn the user if no ID column is selected
+            if (values.indexOf("${id}") == -1) {
+                document.getElementById("notion-id-warning").style.display = "block";
+            }
+            else {
+                document.getElementById("notion-id-warning").style.display = "none";
+            }
+        });
+    }
+}
+
 function displaySpreadsheetPreview(rows, items) {
     document.getElementById("sheet-table").innerHTML = "";
 
@@ -294,13 +387,11 @@ function displaySpreadsheetPreview(rows, items) {
 
             // Warn the user if no ID column is selected
             if (values.indexOf("${id}") == -1) {
-                document.getElementById("id-warning").style.display = "block";
+                document.getElementById("sheets-id-warning").style.display = "block";
             }
             else {
-                document.getElementById("id-warning").style.display = "none";
+                document.getElementById("sheets-id-warning").style.display = "none";
             }
-
-            checkNextScreen3Valid();
         });
     }
     document.getElementById("sheets-loader").style.display = "none";

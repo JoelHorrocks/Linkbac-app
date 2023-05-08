@@ -50,7 +50,7 @@
           <p class="text-xl font-medium text-gray-700 pt-8">Preview of spreadsheet (?)</p>
           <table id="sheet-table" class="spreadsheet">
           </table>
-          <p id="id-warning" style="display: none;">One column must be used for ID or the extension will not function</p>
+          <p id="sheets-id-warning" style="display: none;">One column must be used for ID or the extension will not function</p>
           <p id="sheet-table-error"></p>
           <!-- loading -->
           <svg class="animate-spin h-10 w-10 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" id="sheets-loader" style="display: none;">
@@ -58,7 +58,19 @@
           </svg>
           <button id="refresh-sheet" class="px-4 py-2 mt-8 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">Refresh</button>
     </span>
+    <span id="notion-custom-conditional" style="display: none;">
+        <p class="text-xl font-medium text-gray-700 pt-8">Preview of database (?)</p>
+        <table id="notion-table" class="spreadsheet">
+        </table>
+        <p id="notion-id-warning" style="display: none;">One column must be used for ID or the extension will not function</p>
+        <p id="notion-table-error"></p>
+        <!-- loading -->
+        <svg class="animate-spin h-10 w-10 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" id="notion-loader" style="display: none;">
+          <path fill="#000" d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50">
+        </svg>
+        <button id="refresh-notion" class="px-4 py-2 mt-8 font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600">Refresh</button>
     <br>
+    </span>
     <div id="status"></div>
     <script src="options.js"></script>
 </body>

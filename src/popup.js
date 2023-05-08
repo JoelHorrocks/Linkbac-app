@@ -52,7 +52,10 @@ import './popup.css';
                                         document.getElementById("alert-text").innerText = "Sync failed. Your Notion auth token is invalid. Please sign out of Notion and back in again in settings.";
                                     }
                                     else if(response.error.includes("object_not_found")) {
-                                        document.getElementById("alert-text").innerText = "Sync failed. Linkbac does not have access to your Notion database. Please sign out of Notion and back in again in settings and give the Linkbac integration access to your database.";
+                                        document.getElementById("alert-text").innerText = "Sync failed. Linkbac.app does not have access to your Notion database. Please sign out of Notion and back in again in settings and give the Linkbac.app integration access to your database.";
+                                    }
+                                    else if(response.error.includes("notion_column_sizes_not_equal")) {
+                                        document.getElementById("alert-text").innerText = "Sync failed. Your Notion database has changed since you set up Linkbac.app. Please reconfigure the extension settings.";
                                     }
                                     else if(response.error == undefined) {
                                         document.getElementById("alert-text").innerText = "Sync failed. Please check your internet connection and try again.";
