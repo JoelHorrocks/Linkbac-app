@@ -458,3 +458,50 @@ document.getElementById('custom').addEventListener('change',
     save_options)
 document.getElementById('database_id').addEventListener('change',
     save_options)
+
+function updateSpreadsheetPreview() {
+    document.getElementById("sheets-loader").style.display = "block";
+    chrome.storage.sync.get({
+        spreadsheetId: "",
+        spreadsheetTemplate: ""
+    }, function (items) {
+        if (items.spreadsheetId == "") {
+            document.getElementById("sheets-loader").style.display = "none";
+            document.getElementById("sheets-preview").innerText = "Please enter a spreadsheet ID in the options page.";
+        }
+        else {
+            getSpreadsheetValues(items.spreadsheetId, function (rows) {
+                displaySpreadsheetPreview(rows, items);
+            });
+        }
+    });
+}
+
+function updateNotionPreview() {
+    // clear preview
+    document.getElementById("notion-table").innerHTML = "";
+    chrome.storage.sync.get({
+        authToken: "",
+        databaseId: "",
+        notionTemplate: ""
+    }, function (items) {
+    const notion = new Client({ auth: items.authToken });
+    notion.databases.retrieve({ database_id: items.databaseId })
+        .then(response => {
+            let properties = response.properties;
+            properties = Object.keys(properties).map(key => properties[key].name);
+            console.log(properties);
+            displayNotionPreview(properties, items);
+        }
+        )
+    });
+}
+
+
+document.getElementById("refresh-sheet").addEventListener("click", function () {
+    updateSpreadsheetPreview();
+});
+
+document.getElementById("refresh-notion").addEventListener("click", function () {
+    updateNotionPreview();
+});
