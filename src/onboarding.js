@@ -29,8 +29,17 @@ document.addEventListener(
         }
         
         chrome.storage.sync.get({
-            service: ""
+            service: "",
+            onboardingDone: false
         }, function (items) {
+            if(items.onboardingDone) {
+                // close current tab
+                chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                    chrome.tabs.remove(tabs[0].id, function () { });
+                });
+                chrome.tabs.create({ url: "options.html" });
+            }
+
             if(items.service == "notion") {
 
         chrome.storage.sync.get({
@@ -382,6 +391,12 @@ document.getElementById("close-class-mapping-modal").addEventListener("click", f
 
 document.getElementById("next-screen-3").addEventListener("click", function () {
     nextScreen("screen-4");
+    chrome
+        .storage
+        .sync
+        .set({
+            onboardingDone: true
+        });
 });
 
 function checkNextScreen3Valid() {

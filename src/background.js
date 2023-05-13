@@ -69,9 +69,33 @@ chrome
                         .tabs
                         .remove(tabs[0].id, function () { });
                 });
-            chrome
-                .tabs
-                .create({ url: "onboarding.html?screen=screen-2" });
+                // Get whether to send user back to onboarding or options
+                chrome
+                .storage
+                .sync
+                .get({
+                    onboardingDone: false
+                }, function (items) {
+                    if (!items.onboardingDone) {
+                        chrome
+                            .tabs
+                            .create({ url: "onboarding.html?screen=screen-2" });
+                    } else {
+                        chrome
+                            .tabs
+                            .create({ url: "options.html" });
+                    }
+                })
         }
         return true;
+    });
+
+    chrome.runtime.onInstalled.addListener(function (object) {
+        let internalUrl = chrome.runtime.getURL("onboarding.html");
+    
+        if (object.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+            chrome.tabs.create({ url: internalUrl }, function (tab) {
+                console.log("New tab launched with " + internalUrl);
+            });
+        }
     });

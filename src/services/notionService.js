@@ -225,6 +225,7 @@ export const notionService = {
             }
         }
         console.log(propertiesDict);
+        console.log(columnContents);
 
         // attempt to update if entry already exists
         const queryResponse = await notion
@@ -232,8 +233,8 @@ export const notionService = {
             .query({
                 database_id: databaseId,
                 filter: {
-                    // find first ID column name
-                    property: columnContents.find((element) => element.includes("ID")).replace("${", "").replace("}", ""),
+                    // find first column selected to contain "ID", match to notion column name, read ID ****
+                    property: columnHeaders[columnContents.indexOf(columnContents.find((element) => element.includes("id")))],
                     number: {
                         equals: parseInt(message["id"])
                     }

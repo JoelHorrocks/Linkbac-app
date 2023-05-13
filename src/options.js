@@ -139,19 +139,23 @@ function restore_options() {
                 document.getElementById("notion-custom-conditional").style.display = "block";
 
                 // Get database headers
+                        if(items.databaseId == "" || items.databaseId == null) {
+                            document.getElementById("notion-table-error").innerHTML = "Please enter your Notion database ID.";
+                        }
+                        else {
                 const notion = new Client({ auth: items.authToken });
                 notion.databases.retrieve({ database_id: items.databaseId })
                     .then(response => {
                         let properties = response.properties;
                         properties = Object.keys(properties).map(key => properties[key].name);
                         console.log(properties);
-                        displayNotionPreview(properties, items);
 
                         // STORE TYPE OF EACH COLUMN, CAST TO THAT TYPE WHEN SENDING TO NOTION
                         // REFACTOR
                     }
                     )
             }
+        }
         }
         else if (items.service == "google-sheets") {
             document.getElementById("sheets-conditional").style.display = "block";
@@ -480,20 +484,27 @@ function updateSpreadsheetPreview() {
 function updateNotionPreview() {
     // clear preview
     document.getElementById("notion-table").innerHTML = "";
+    document.getElementById("notion-table-error").innerText = "";
+
     chrome.storage.sync.get({
         authToken: "",
         databaseId: "",
         notionTemplate: ""
     }, function (items) {
-    const notion = new Client({ auth: items.authToken });
-    notion.databases.retrieve({ database_id: items.databaseId })
-        .then(response => {
-            let properties = response.properties;
-            properties = Object.keys(properties).map(key => properties[key].name);
-            console.log(properties);
-            displayNotionPreview(properties, items);
+        if(items.databaseId == "" || items.databaseId == null) {
+            document.getElementById("notion-table-error").innerText = "Please enter your Notion database ID";
         }
-        )
+        else {
+            const notion = new Client({ auth: items.authToken });
+            notion.databases.retrieve({ database_id: items.databaseId })
+                .then(response => {
+                    let properties = response.properties;
+                    properties = Object.keys(properties).map(key => properties[key].name);
+                    console.log(properties);
+                    displayNotionPreview(properties, items);
+                }
+                )
+        }
     });
 }
 
