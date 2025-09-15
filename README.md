@@ -35,4 +35,4 @@ Update  'public/manifest.json' before distributing the extension:
 ## Disclaimer
 
 > [!NOTE]  
-> Linkbac is an independent time-management tool for students and has no affiliation with or endorsement by ManageBac or Faria Education Group.
+> Linkbac.app is an independent time-management tool for students and has no affiliation with or endorsement by ManageBac or Faria Education Group.
