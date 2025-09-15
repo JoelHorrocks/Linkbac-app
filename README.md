@@ -20,9 +20,11 @@ Linkbac.app is a Chrome extension that helps students manage their time by turni
 - [x] Sync settings with Google Chrome profile
 - [ ] AI task summaries (early implementation in notionService.js [here](https://github.com/JoelHorrocks/Linkbac/commit/54edc4a6994d23b738b7f60cb0da2988acfec580) and [here](https://github.com/JoelHorrocks/Linkbac/commit/c1ee2b55104e7ff860f392323d5775723ffa70ba) - removed later in the repo history as I built this in the days of GPT-3 and results were mixed)
 - [ ] Google Calendar integration
+- [ ] Implement Sheets/Drive server side code to move API key out of extension
+- [ ] Use [extension messaging](https://developer.chrome.com/docs/extensions/develop/concepts/messaging#external-webpage) to pass OAuth key from server to extension
 
-> [!NOTE]  
-> I built this when I last had access to ManageBac in 2023. Any subsequent changes they have made to the website may have rendered this extension no longer functional.
+> [!WARNING]  
+> This extension is not production-ready - Notion OAuth key passing from server is a potential security issue, though keys are appropriately scoped. I built this when I last had access to ManageBac in 2023. Any subsequent changes they have made to the website may have rendered this extension no longer functional.
 
 ## External services
 
