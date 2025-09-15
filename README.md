@@ -26,11 +26,13 @@ Linkbac.app is a Chrome extension that helps students manage their time by turni
 
 ## External services
 
-For Notion access, after signing in through the Linkbac OAuth helper (`https://linkbac.app/oauth/oauth.php`) the extension receives an access token, bot ID, and optional duplicated template ID (`src/contentScript.js`). If you intend to self-host the OAuth helper used for Notion, deploy a service that proxies the Notion OAuth flow (authorize URL, token exchange, and optional template duplication) and update the URLs in 'src/onboarding.js', 'src/options.js', 'src/contentScript.js', and 'public/manifest.json' to point to your domain.
+For Notion access, after signing in through the Linkbac.app OAuth helper the extension receives an access token, bot ID, and optional duplicated template ID (`src/contentScript.js`). If you intend to self-host the OAuth helper used for Notion, deploy a service that proxies the Notion OAuth flow (authorize URL, token exchange, and optional template duplication) and update the URLs in 'src/onboarding.js', 'src/options.js', 'src/contentScript.js', and 'public/manifest.json' to point to your domain.
 
 Update  'public/manifest.json' before distributing the extension:
 - Replace the placeholder '"key": "KEY"' with your extension key.
 - Set 'oauth2.client_id' to the client ID generated for your Chrome extension in Google Cloud.
+
+For testing, replace SHEETS_KEY in src/services/sheetsService.js with Google Sheets / Google Drive API key. Otherwise, point the requests to a server that passes them to the API to hide the API key (as with the OAuth helper above).
 
 ## Disclaimer
 
